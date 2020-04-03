@@ -50,6 +50,7 @@ class _AllShowsPageState extends State<AllShowsPage> {
     "Amazon",
     "Hulu"
   ];
+  int _currentIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +61,46 @@ class _AllShowsPageState extends State<AllShowsPage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xfff5f7f9),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          iconSize: 25,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.theaters,
+                color: (_currentIndex == 0) ? Color(0xFFFD0A4C) : Colors.grey,
+              ),
+              title: Text(""),
+            ),
+            BottomNavigationBarItem(
+              title: Text(""),
+              icon: Icon(
+                Icons.whatshot,
+                color: (_currentIndex == 1) ? Color(0xFFFD0A4C) : Colors.grey,
+              ),
+            ),
+            BottomNavigationBarItem(
+              title: Text(""),
+              icon: Icon(
+                Icons.bookmark,
+                color: (_currentIndex == 2) ? Color(0xFFFD0A4C) : Colors.grey,
+              ),
+            ),
+            BottomNavigationBarItem(
+              title: Text(""),
+              icon: Icon(
+                Icons.person,
+                color: (_currentIndex == 3) ? Color(0xFFFD0A4C) : Colors.grey,
+              ),
+            )
+          ],
+          onTap: (index) {
+            print(index);
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
         body: Column(
           children: <Widget>[
             SizedBox(
