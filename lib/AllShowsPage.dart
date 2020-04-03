@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'Movie.dart';
+import 'package:cinemaapp/MovieDescrption.dart';
 
 class AllShowsPage extends StatefulWidget {
   @override
@@ -236,6 +237,14 @@ class _AllShowsPageState extends State<AllShowsPage> {
                                   onPressed: () {
                                     print("Holaa amigo ");
                                   },
+                                ),
+                                Positioned(
+                                  bottom: 10,
+                                  left: 50,
+                                  child: Container(
+                                    child: ratingBar(3),
+                                    //  child: StarDisplay(value: 2.5),
+                                  ),
                                 ),
                                 Positioned(
                                     top: 180,
