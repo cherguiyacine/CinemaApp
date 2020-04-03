@@ -1,6 +1,7 @@
 import 'package:cinemaapp/Movie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rating_bar/rating_bar.dart';
 
 class MovieDescription extends StatefulWidget {
   @override
@@ -178,44 +179,10 @@ Widget movieInfo(Movie _movieToShow, double heightScreen, double widthScreen) {
       ),
       Positioned(
         bottom: 10,
-        left: 15,
+        left: 25,
         child: Container(
-          child: Row(
-            children: <Widget>[
-              IconButton(
-                iconSize: 25,
-                icon: Icon(
-                  Icons.star,
-                  color: Colors.white,
-                ),
-                onPressed: () {},
-              ),
-              IconButton(
-                iconSize: 25,
-                icon: Icon(
-                  Icons.star,
-                  color: Colors.white,
-                ),
-                onPressed: () {},
-              ),
-              IconButton(
-                iconSize: 25,
-                icon: Icon(
-                  Icons.star,
-                  color: Colors.white,
-                ),
-                onPressed: () {},
-              ),
-              IconButton(
-                iconSize: 25,
-                icon: Icon(
-                  Icons.star,
-                  color: Colors.white,
-                ),
-                onPressed: () {},
-              ),
-            ],
-          ),
+          child: ratingBar(_movieToShow.mark),
+          //  child: StarDisplay(value: 2.5),
         ),
       ),
       Align(
@@ -337,5 +304,39 @@ Widget costumAppBar(String movieName) {
         ),
       ),
     ],
+  );
+}
+
+/*
+class StarDisplay extends StatelessWidget {
+  final double value;
+  const StarDisplay({Key key, this.value = 0})
+      : assert(value != null),
+        super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        return Icon(
+          index < value ? Icons.star : Icons.star_border,
+          color: Colors.white,
+        );
+      }),
+    );
+  }
+}
+*/
+Widget ratingBar(double value) {
+  return RatingBar.readOnly(
+    initialRating: value,
+    isHalfAllowed: true,
+    halfFilledIcon: Icons.star_half,
+    filledIcon: Icons.star,
+    emptyIcon: Icons.star_border,
+    size: 25,
+    filledColor: Colors.white,
+    emptyColor: Colors.white,
+    halfFilledColor: Colors.white,
   );
 }
