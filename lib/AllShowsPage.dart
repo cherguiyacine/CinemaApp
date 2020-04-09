@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'Movie.dart';
+import 'package:cinemaapp/MovieDescrption.dart';
 
 class AllShowsPage extends StatefulWidget {
   @override
@@ -50,6 +51,7 @@ class _AllShowsPageState extends State<AllShowsPage> {
     "Amazon",
     "Hulu"
   ];
+  int _currentIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +62,46 @@ class _AllShowsPageState extends State<AllShowsPage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xfff5f7f9),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          iconSize: 25,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.theaters,
+                color: (_currentIndex == 0) ? Color(0xFFFD0A4C) : Colors.grey,
+              ),
+              title: Text(""),
+            ),
+            BottomNavigationBarItem(
+              title: Text(""),
+              icon: Icon(
+                Icons.whatshot,
+                color: (_currentIndex == 1) ? Color(0xFFFD0A4C) : Colors.grey,
+              ),
+            ),
+            BottomNavigationBarItem(
+              title: Text(""),
+              icon: Icon(
+                Icons.bookmark,
+                color: (_currentIndex == 2) ? Color(0xFFFD0A4C) : Colors.grey,
+              ),
+            ),
+            BottomNavigationBarItem(
+              title: Text(""),
+              icon: Icon(
+                Icons.person,
+                color: (_currentIndex == 3) ? Color(0xFFFD0A4C) : Colors.grey,
+              ),
+            )
+          ],
+          onTap: (index) {
+            print(index);
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
         body: Column(
           children: <Widget>[
             SizedBox(
@@ -195,6 +237,14 @@ class _AllShowsPageState extends State<AllShowsPage> {
                                   onPressed: () {
                                     print("Holaa amigo ");
                                   },
+                                ),
+                                Positioned(
+                                  bottom: 10,
+                                  left: 50,
+                                  child: Container(
+                                    child: ratingBar(3),
+                                    //  child: StarDisplay(value: 2.5),
+                                  ),
                                 ),
                                 Positioned(
                                     top: 180,
