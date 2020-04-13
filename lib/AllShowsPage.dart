@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'Movie.dart';
 import 'package:cinemaapp/MovieDescrption.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AllShowsPage extends StatefulWidget {
   @override
@@ -19,9 +20,15 @@ class _AllShowsPageState extends State<AllShowsPage> {
     false
   ]; // for companies buttons states // Selected or not
   List<Movie> listMovies = [];
+  final _firestore = Firestore.instance;
+
   List<String> moviesCoversLinks = [];
-  int _currentMovie = 0; // for Movies Caroussel
-  initMoviesList() {
+  //int _currentMovie = 0; // for Movies Caroussel
+  int _currentIndex = 1;
+
+  initMoviesList() async {
+    moviesCoversLinks.clear();
+    listMovies.clear();
     Movie m1 = new Movie();
     m1.coverLink = 'assets/joker.jpg';
     moviesCoversLinks.add('assets/joker.jpg');
@@ -32,15 +39,39 @@ class _AllShowsPageState extends State<AllShowsPage> {
     Movie m3 = new Movie();
     m3.coverLink = 'images/madmax.jpg';
     moviesCoversLinks.add('images/madmax.jpg');
+    Movie m = new Movie();
+    await for (var snapshot in _firestore
+        .collection('platforme')
+        .document('netflix')
+        .collection('movies')
+        .snapshots()) {
+      for (var platforme in snapshot.documents) {
+        m = new Movie();
+        m.name = platforme.data['name'].toString();
+        listMovies.add(m);
+        print(
+            platforme.data['name']); // get only name field in collection movie
+      }
+      print("TTTT===========>");
+      print(listMovies.length);
+    }
 
-    Movie m4 = new Movie();
-    m4.coverLink = 'assets/shazam.jpeg';
-    moviesCoversLinks.add('assets/shazam.jpeg');
-
-    listMovies.add(m1);
-    listMovies.add(m2);
-    listMovies.add(m3);
-    listMovies.add(m4);
+    /* final platforme = await _firestore
+        .collection('platforme')
+        .document('netflix')
+        .collection('movies')
+        .getDocuments();
+    for (var movie in platforme.documents) {
+      m = new Movie();
+      m.name = movie.data['name'].toString();
+      listMovies.add(m);
+      print(movie.data['name']);
+    }
+    print("TTTT===========>");
+    print(listMovies.length);*/
+    //Movie m4 = new Movie();
+    //  m4.coverLink = 'assets/shazam.jpeg';
+    // moviesCoversLinks.add('assets/shazam.jpeg');
   }
 
   List<String> companies = [
@@ -51,13 +82,13 @@ class _AllShowsPageState extends State<AllShowsPage> {
     "Amazon",
     "Hulu"
   ];
-  int _currentIndex = 1;
 
   @override
   Widget build(BuildContext context) {
-    moviesCoversLinks.clear();
-    listMovies.clear();
     initMoviesList();
+    print("---->>>>");
+    print(listMovies.length);
+    print(moviesCoversLinks.length);
 
     return SafeArea(
       child: Scaffold(
@@ -211,59 +242,40 @@ class _AllShowsPageState extends State<AllShowsPage> {
                     height: 8,
                   ),
                   SizedBox(
-                    height: 300,
+                    height: 328,
                     child: ListView.builder(
                         itemCount: moviesCoversLinks.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int indexMovies) {
-                          return Container(
-                            child: Stack(
-                              children: <Widget>[
-                                FlatButton(
-                                  child: ClipRRect(
-                                    borderRadius: new BorderRadius.only(
-                                        topRight: Radius.circular(20),
-                                        topLeft: Radius.circular(8),
-                                        bottomLeft: Radius.circular(20),
-                                        bottomRight: Radius.circular(20)),
-                                    child: Image(
-                                      fit: BoxFit.fill,
-                                      image: AssetImage(
-                                          moviesCoversLinks[indexMovies]),
-                                      width: 230.0,
-                                      height: 300.0,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    print("Holaa amigo ");
-                                  },
-                                ),
-                                Positioned(
-                                  bottom: 10,
-                                  left: 50,
-                                  child: Container(
-                                    child: ratingBar(3),
-                                    //  child: StarDisplay(value: 2.5),
+                          return Column(
+                            children: <Widget>[
+                              FlatButton(
+                                child: ClipRRect(
+                                  borderRadius: new BorderRadius.only(
+                                      topRight: Radius.circular(20),
+                                      topLeft: Radius.circular(8),
+                                      bottomLeft: Radius.circular(20),
+                                      bottomRight: Radius.circular(20)),
+                                  child: Image(
+                                    fit: BoxFit.fill,
+                                    image: AssetImage(
+                                        moviesCoversLinks[indexMovies]),
+                                    width: 230.0,
+                                    height: 300.0,
                                   ),
                                 ),
-                                Positioned(
-                                    top: 180,
-                                    left: 50,
-                                    child: Text(
-                                      "Drive",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 48),
-                                    )),
-                                Positioned(
-                                    top: 230,
-                                    left: 50,
-                                    child: Text(
-                                      "Al Mokhrij Name",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 16),
-                                    )),
-                              ],
-                            ),
+                                onPressed: () {
+                                  initMoviesList();
+                                },
+                              ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              Text(
+                                "Joker (2019)",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           );
                         }),
                   ),
@@ -288,31 +300,40 @@ class _AllShowsPageState extends State<AllShowsPage> {
                     height: 8,
                   ),
                   SizedBox(
-                    height: 300,
+                    height: 328,
                     child: ListView.builder(
                         itemCount: moviesCoversLinks.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int indexMovies) {
-                          return Container(
-                            child: FlatButton(
-                              child: ClipRRect(
-                                borderRadius: new BorderRadius.only(
-                                    topRight: Radius.circular(20),
-                                    topLeft: Radius.circular(8),
-                                    bottomLeft: Radius.circular(20),
-                                    bottomRight: Radius.circular(20)),
-                                child: Image(
-                                  fit: BoxFit.fill,
-                                  image: AssetImage(
-                                      moviesCoversLinks[indexMovies]),
-                                  width: 230.0,
-                                  height: 300.0,
+                          return Column(
+                            children: <Widget>[
+                              FlatButton(
+                                child: ClipRRect(
+                                  borderRadius: new BorderRadius.only(
+                                      topRight: Radius.circular(20),
+                                      topLeft: Radius.circular(8),
+                                      bottomLeft: Radius.circular(20),
+                                      bottomRight: Radius.circular(20)),
+                                  child: Image(
+                                    fit: BoxFit.fill,
+                                    image: AssetImage(
+                                        moviesCoversLinks[indexMovies]),
+                                    width: 230.0,
+                                    height: 300.0,
+                                  ),
                                 ),
+                                onPressed: () {
+                                  print("hello corona");
+                                },
                               ),
-                              onPressed: () {
-                                print("Holaa amigo ");
-                              },
-                            ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              Text(
+                                "Joker (2019)",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           );
                         }),
                   ),
