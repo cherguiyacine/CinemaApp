@@ -204,6 +204,8 @@ class _AllShowsPageState extends State<AllShowsPage> {
                           m.releaseYear = movie.data['releaseYear'];
                           m.synopsis = movie.data['synopsis'];
                           m.time = movie.data['time'];
+                          //m.mark = movie.data['mark'].;
+
                           m.coverLink = movie.data['coverLink'];
 
                           print(m.coverLink);
@@ -250,7 +252,15 @@ class _AllShowsPageState extends State<AllShowsPage> {
                                           },
                                         ),
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MovieDescription(
+                                                      moviesList[indexMovies])),
+                                        );
+                                      },
                                     ),
                                     SizedBox(
                                       height: 12,

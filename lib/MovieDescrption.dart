@@ -1,17 +1,22 @@
+import 'package:cinemaapp/AllShowsPage.dart';
 import 'package:cinemaapp/Movie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rating_bar/rating_bar.dart';
 
 class MovieDescription extends StatefulWidget {
+  final Movie movieToShow;
+  MovieDescription(this.movieToShow);
   @override
   State<StatefulWidget> createState() {
-    return MovieDescriptionState();
+    return MovieDescriptionState(movieToShow);
   }
 }
 
 class MovieDescriptionState extends State<MovieDescription> {
-  Movie _movieToShow = Movie();
+  final Movie _movieToShow;
+  MovieDescriptionState(this._movieToShow);
+
   List<String> imgList = [
     "images/tom.jpg",
     "images/hoult.jpg",
@@ -22,7 +27,7 @@ class MovieDescriptionState extends State<MovieDescription> {
     "images/hoult.jpg",
     "images/charl.jpg",
   ];
-  int _currentIndex = 3;
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +82,40 @@ class MovieDescriptionState extends State<MovieDescription> {
           body: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                costumAppBar(_movieToShow.name),
+                new Stack(
+                  children: <Widget>[
+                    Container(
+                      child: Row(
+                        //  mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          IconButton(
+                            iconSize: 25,
+                            icon: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context, 'Yep!');
+                            },
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Text(
+                                _movieToShow.name,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
                 new Padding(padding: new EdgeInsets.all(5.3)),
                 movieInfo(_movieToShow, heightScreen, widthScreen),
                 new Padding(padding: new EdgeInsets.all(5.3)),
@@ -167,13 +205,23 @@ Widget movieInfo(Movie _movieToShow, double heightScreen, double widthScreen) {
         alignment: Alignment.center,
         child: ClipRRect(
           borderRadius: new BorderRadius.circular(10.0),
-          child: Image(
+          child: Image.network(
+            _movieToShow.coverLink,
             fit: BoxFit.fill,
-            image: AssetImage(
-              'images/madmax.jpg',
-            ),
             width: widthScreen * 0.9,
             height: 240.0,
+            loadingBuilder: (BuildContext context, Widget child,
+                ImageChunkEvent loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes
+                      : null,
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -231,7 +279,7 @@ Widget movieInfo(Movie _movieToShow, double heightScreen, double widthScreen) {
                   height: 240.0 * 0.20,
                   child: Center(
                     child: Text(
-                      "4.5",
+                      _movieToShow.mark.toString(),
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
@@ -268,7 +316,7 @@ Widget costumAppBar(String movieName) {
     children: <Widget>[
       Container(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //  mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             IconButton(
               iconSize: 25,
@@ -277,10 +325,15 @@ Widget costumAppBar(String movieName) {
                 color: Colors.black,
               ),
               onPressed: () {
-                print("movieName");
+                BuildContext context;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AllShowsPage()),
+                );
               },
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 Text(
                   movieName,
@@ -288,14 +341,6 @@ Widget costumAppBar(String movieName) {
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  "- FURY ROAD  ",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 25,
-                    // fontWeight: FontWeight.w800,
                   ),
                 ),
               ],
@@ -335,7 +380,7 @@ Widget ratingBar(double value) {
     filledIcon: Icons.star,
     emptyIcon: Icons.star_border,
     size: 25,
-    filledColor: Colors.black,
+    filledColor: Colors.white,
     emptyColor: Colors.white,
     halfFilledColor: Colors.white,
   );
