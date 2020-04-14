@@ -204,6 +204,9 @@ class _AllShowsPageState extends State<AllShowsPage> {
                           m.releaseYear = movie.data['releaseYear'];
                           m.synopsis = movie.data['synopsis'];
                           m.time = movie.data['time'];
+                          m.coverLink = movie.data['coverLink'];
+
+                          print(m.coverLink);
                           moviesList.add(m);
                         }
                         return SizedBox(
@@ -223,7 +226,7 @@ class _AllShowsPageState extends State<AllShowsPage> {
                                             bottomLeft: Radius.circular(20),
                                             bottomRight: Radius.circular(20)),
                                         child: Image.network(
-                                          "https://i.picsum.photos/id/9/250/250.jpg",
+                                          moviesList[indexMovies].coverLink,
                                           fit: BoxFit.fill,
                                           width: 230.0,
                                           height: 300.0,
@@ -319,7 +322,7 @@ class _AllShowsPageState extends State<AllShowsPage> {
                                             bottomLeft: Radius.circular(20),
                                             bottomRight: Radius.circular(20)),
                                         child: Image.network(
-                                          "https://i.picsum.photos/id/9/250/250.jpg",
+                                          "https://static1.purebreak.com.br/articles/4/22/45/4/@/113261--the-walking-dead-a-serie-dos-zumbis-m-950x0-2.jpg",
                                           fit: BoxFit.fill,
                                           width: 230.0,
                                           height: 300.0,
