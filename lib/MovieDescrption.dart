@@ -335,7 +335,7 @@ Widget ratingBar(double value) {
     filledIcon: Icons.star,
     emptyIcon: Icons.star_border,
     size: 25,
-    filledColor: Colors.white,
+    filledColor: Colors.black,
     emptyColor: Colors.white,
     halfFilledColor: Colors.white,
   );
