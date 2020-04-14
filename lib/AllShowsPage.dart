@@ -204,7 +204,7 @@ class _AllShowsPageState extends State<AllShowsPage> {
                           m.releaseYear = movie.data['releaseYear'];
                           m.synopsis = movie.data['synopsis'];
                           m.time = movie.data['time'];
-                          //m.mark = movie.data['mark'].;
+                          m.mark = double.parse(movie.data['mark']);
 
                           m.coverLink = movie.data['coverLink'];
 
