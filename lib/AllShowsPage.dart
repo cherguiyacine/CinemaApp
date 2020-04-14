@@ -19,65 +19,16 @@ class _AllShowsPageState extends State<AllShowsPage> {
     false,
     false
   ]; // for companies buttons states // Selected or not
-  List<Movie> listMovies = [];
   final _firestore = Firestore.instance;
 
   List<String> moviesCoversLinks = [];
   //int _currentMovie = 0; // for Movies Caroussel
   int _currentIndex = 1;
-
-  initMoviesList() async {
-    moviesCoversLinks.clear();
-    listMovies.clear();
-    Movie m1 = new Movie();
-    m1.coverLink = 'assets/joker.jpg';
-    moviesCoversLinks.add('assets/joker.jpg');
-    Movie m2 = new Movie();
-    m2.coverLink = 'assets/cover1.png';
-    moviesCoversLinks.add('assets/cover1.png');
-
-    Movie m3 = new Movie();
-    m3.coverLink = 'images/madmax.jpg';
-    moviesCoversLinks.add('images/madmax.jpg');
-    Movie m = new Movie();
-    await for (var snapshot in _firestore
-        .collection('platforme')
-        .document('netflix')
-        .collection('movies')
-        .snapshots()) {
-      for (var platforme in snapshot.documents) {
-        m = new Movie();
-        m.name = platforme.data['name'].toString();
-        listMovies.add(m);
-        print(
-            platforme.data['name']); // get only name field in collection movie
-      }
-      print("TTTT===========>");
-      print(listMovies.length);
-    }
-
-    /* final platforme = await _firestore
-        .collection('platforme')
-        .document('netflix')
-        .collection('movies')
-        .getDocuments();
-    for (var movie in platforme.documents) {
-      m = new Movie();
-      m.name = movie.data['name'].toString();
-      listMovies.add(m);
-      print(movie.data['name']);
-    }
-    print("TTTT===========>");
-    print(listMovies.length);*/
-    //Movie m4 = new Movie();
-    //  m4.coverLink = 'assets/shazam.jpeg';
-    // moviesCoversLinks.add('assets/shazam.jpeg');
-  }
-
+  int companyIndex = 0;
   List<String> companies = [
     "Recomended",
-    "Netflix",
-    "HBO",
+    "netflix",
+    "HBOGO",
     "AppleTv",
     "Amazon",
     "Hulu"
@@ -85,11 +36,6 @@ class _AllShowsPageState extends State<AllShowsPage> {
 
   @override
   Widget build(BuildContext context) {
-    initMoviesList();
-    print("---->>>>");
-    print(listMovies.length);
-    print(moviesCoversLinks.length);
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xfff5f7f9),
@@ -203,6 +149,7 @@ class _AllShowsPageState extends State<AllShowsPage> {
                               onPressed: () {
                                 setState(() {
                                   _list[index] = true;
+                                  companyIndex = index;
                                   for (int i = 0; i < companies.length; i++) {
                                     if (i != index) {
                                       _list[i] = false;
@@ -241,43 +188,82 @@ class _AllShowsPageState extends State<AllShowsPage> {
                   SizedBox(
                     height: 8,
                   ),
-                  SizedBox(
-                    height: 328,
-                    child: ListView.builder(
-                        itemCount: moviesCoversLinks.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int indexMovies) {
-                          return Column(
-                            children: <Widget>[
-                              FlatButton(
-                                child: ClipRRect(
-                                  borderRadius: new BorderRadius.only(
-                                      topRight: Radius.circular(20),
-                                      topLeft: Radius.circular(8),
-                                      bottomLeft: Radius.circular(20),
-                                      bottomRight: Radius.circular(20)),
-                                  child: Image(
-                                    fit: BoxFit.fill,
-                                    image: AssetImage(
-                                        moviesCoversLinks[indexMovies]),
-                                    width: 230.0,
-                                    height: 300.0,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  initMoviesList();
-                                },
-                              ),
-                              SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                "Joker (2019)",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          );
-                        }),
+                  StreamBuilder(
+                    stream: _firestore
+                        .collection('platforme')
+                        .document(companies[companyIndex])
+                        .collection('movies')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final movies = snapshot.data.documents;
+                        List<Movie> moviesList = [];
+                        for (var movie in movies) {
+                          Movie m = new Movie();
+                          m.name = movie.data['name'];
+                          m.releaseYear = movie.data['releaseYear'];
+                          m.synopsis = movie.data['synopsis'];
+                          m.time = movie.data['time'];
+                          moviesList.add(m);
+                        }
+                        return SizedBox(
+                          height: 328,
+                          child: ListView.builder(
+                              itemCount: moviesList.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder:
+                                  (BuildContext context, int indexMovies) {
+                                return Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                      child: ClipRRect(
+                                        borderRadius: new BorderRadius.only(
+                                            topRight: Radius.circular(20),
+                                            topLeft: Radius.circular(8),
+                                            bottomLeft: Radius.circular(20),
+                                            bottomRight: Radius.circular(20)),
+                                        child: Image.network(
+                                          "https://i.picsum.photos/id/9/250/250.jpg",
+                                          fit: BoxFit.fill,
+                                          width: 230.0,
+                                          height: 300.0,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes
+                                                    : null,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                    SizedBox(
+                                      height: 12,
+                                    ),
+                                    Text(
+                                      moviesList[indexMovies].name +
+                                          ' (${moviesList[indexMovies].releaseYear})',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                );
+                              }),
+                        );
+                      }
+                    },
                   ),
                   SizedBox(
                     height: 21,
@@ -300,46 +286,80 @@ class _AllShowsPageState extends State<AllShowsPage> {
                     height: 8,
                   ),
                   SizedBox(
-                    height: 328,
-                    child: ListView.builder(
-                        itemCount: moviesCoversLinks.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int indexMovies) {
-                          return Column(
-                            children: <Widget>[
-                              FlatButton(
-                                child: ClipRRect(
-                                  borderRadius: new BorderRadius.only(
-                                      topRight: Radius.circular(20),
-                                      topLeft: Radius.circular(8),
-                                      bottomLeft: Radius.circular(20),
-                                      bottomRight: Radius.circular(20)),
-                                  child: Image(
-                                    fit: BoxFit.fill,
-                                    image: AssetImage(
-                                        moviesCoversLinks[indexMovies]),
-                                    width: 230.0,
-                                    height: 300.0,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  print("hello corona");
-                                },
-                              ),
-                              SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                "Joker (2019)",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          );
-                        }),
-                  ),
-                  SizedBox(
                     height: 16,
-                  )
+                  ),
+                  StreamBuilder(
+                    stream: _firestore
+                        .collection('platforme')
+                        .document('netflix')
+                        .collection('movies')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final movies = snapshot.data.documents;
+                        List<String> moviesWidgets = [];
+                        for (var movie in movies) {
+                          final movieName = movie.data['name'];
+                          moviesWidgets.add(movieName);
+                        }
+                        return SizedBox(
+                          height: 328,
+                          child: ListView.builder(
+                              itemCount: moviesWidgets.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder:
+                                  (BuildContext context, int indexMovies) {
+                                return Column(
+                                  children: <Widget>[
+                                    FlatButton(
+                                      child: ClipRRect(
+                                        borderRadius: new BorderRadius.only(
+                                            topRight: Radius.circular(20),
+                                            topLeft: Radius.circular(8),
+                                            bottomLeft: Radius.circular(20),
+                                            bottomRight: Radius.circular(20)),
+                                        child: Image.network(
+                                          "https://i.picsum.photos/id/9/250/250.jpg",
+                                          fit: BoxFit.fill,
+                                          width: 230.0,
+                                          height: 300.0,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes
+                                                    : null,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                    SizedBox(
+                                      height: 12,
+                                    ),
+                                    Text(
+                                      moviesWidgets[indexMovies],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                );
+                              }),
+                        );
+                      }
+                    },
+                  ),
                 ],
               ),
             )
