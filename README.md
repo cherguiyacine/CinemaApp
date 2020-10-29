@@ -1,7 +1,6 @@
 # cinemaapp
 
-A new Flutter project.
-
+Flutter app that displays a beautiful UI of movies and series and their description 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
